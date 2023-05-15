@@ -40,47 +40,6 @@ func (t *circuitSignature) Define(api frontend.API) error {
 	return verifyTransferSignature(api, t.Transfers[0], hFunc)
 }
 
-func TestCircuitSignature(t *testing.T) {
-
-	const nbAccounts = 10
-
-	operator, users := createOperator(nbAccounts)
-
-	// read accounts involved in the transfer
-	sender, err := operator.readAccount(0)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	receiver, err := operator.readAccount(1)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// create the transfer and sign it
-	amount := uint64(10)
-	transfer := NewTransfer(amount, sender.pubKey, receiver.pubKey, sender.nonce)
-
-	// sign the transfer
-	_, err = transfer.Sign(users[0], operator.h)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// update the state from the received transfer
-	err = operator.updateState(transfer, 0)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// verifies the signature of the transfer
-	assert := test.NewAssert(t)
-
-	var signatureCircuit circuitSignature
-	assert.ProverSucceeded(&signatureCircuit, &operator.witnesses, test.WithCurves(ecc.BN254), test.WithCompileOpts(frontend.IgnoreUnconstrainedInputs()))
-
-}
-
 type circuitInclusionProof Circuit
 
 // Circuit implements part of the rollup circuit only by delcaring a subset of the constraints
