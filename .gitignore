@@ -44,6 +44,7 @@ examples/**/*.html
 gnarkd/circuits/**
 
 .vscode
+.idea
 
 # compiled sage -> python code
 *.sage.py
